@@ -7,24 +7,24 @@
 #########################################
 # Get dependency images as build stages #
 #########################################
-FROM accurics/terrascan:1.13.2 as terrascan
-FROM alpine/terragrunt:1.1.7 as terragrunt
+FROM accurics/terrascan:1.14.0 as terrascan
+FROM alpine/terragrunt:1.1.9 as terragrunt
 FROM assignuser/chktex-alpine:v0.1.1 as chktex
 FROM cljkondo/clj-kondo:2022.03.09-alpine as clj-kondo
 FROM dotenvlinter/dotenv-linter:3.2.0 as dotenv-linter
 FROM garethr/kubeval:0.15.0 as kubeval
 FROM ghcr.io/awkbar-devops/clang-format:v1.0.2 as clang-format
-FROM ghcr.io/terraform-linters/tflint-bundle:v0.34.1.2 as tflint
-FROM golangci/golangci-lint:v1.45.2 as golangci-lint
+FROM ghcr.io/terraform-linters/tflint-bundle:v0.36.2.0 as tflint
+FROM golangci/golangci-lint:v1.46.0 as golangci-lint
 FROM hadolint/hadolint:latest-alpine as dockerfile-lint
-FROM hashicorp/terraform:1.1.7 as terraform
+FROM hashicorp/terraform:1.2.0 as terraform
 FROM koalaman/shellcheck:v0.8.0 as shellcheck
 FROM mstruebing/editorconfig-checker:2.4.0 as editorconfig-checker
 FROM mvdan/shfmt:v3.4.3 as shfmt
-FROM rhysd/actionlint:1.6.10 as actionlint
-FROM scalameta/scalafmt:v3.4.3 as scalafmt
-FROM yoheimuta/protolint:v0.37.1 as protolint
-FROM zricethezav/gitleaks:v8.5.2 as gitleaks
+FROM rhysd/actionlint:1.6.12 as actionlint
+FROM scalameta/scalafmt:v3.5.2 as scalafmt
+FROM yoheimuta/protolint:v0.38.1 as protolint
+FROM zricethezav/gitleaks:v8.8.4 as gitleaks
 
 ##################
 # Get base image #
@@ -63,7 +63,6 @@ RUN apk add --no-cache \
     git git-lfs \
     go \
     gnupg \
-    go \
     icu-libs \
     jpeg-dev \
     jq \
@@ -245,19 +244,14 @@ RUN apk add --no-cache rakudo zef \
     ######################
     # Install CheckStyle #
     ######################
-    && CHECKSTYLE_LATEST=$(curl -s https://api.github.com/repos/checkstyle/checkstyle/releases/latest \
-    | grep browser_download_url \
-    | grep ".jar" \
-    | cut -d '"' -f 4) \
-    && curl --retry 5 --retry-delay 5 -sSL "$CHECKSTYLE_LATEST" \
+    && curl --retry 5 --retry-delay 5 -sSL \
+    "$(curl -s https://api.github.com/repos/checkstyle/checkstyle/releases/latest | jq -r '.assets[0].browser_download_url')" \
     --output /usr/bin/checkstyle \
     ##############################
     # Install google-java-format #
     ##############################
-    && GOOGLE_JAVA_FORMAT_VERSION=$(curl -s https://github.com/google/google-java-format/releases/latest \
-    | cut -d '"' -f 2 | cut -d '/' -f 8 | sed -e 's/v//g') \
     && curl --retry 5 --retry-delay 5 -sSL \
-    "https://github.com/google/google-java-format/releases/download/v$GOOGLE_JAVA_FORMAT_VERSION/google-java-format-$GOOGLE_JAVA_FORMAT_VERSION-all-deps.jar" \
+    "$(curl -s https://api.github.com/repos/google/google-java-format/releases/latest | jq -r '.assets | .[] | select(.browser_download_url | contains("all-deps.jar")) | .browser_download_url')" \
     --output /usr/bin/google-java-format \
     #################################
     # Install luacheck and luarocks #
@@ -295,7 +289,7 @@ RUN ./build-venvs.sh
 ################################################################################
 # Grab small clean image to build final_slim ###################################
 ################################################################################
-FROM alpine:3.15.2 as final_slim
+FROM alpine:3.15.4 as final_slim
 
 ############################
 # Get the build arguements #
@@ -419,6 +413,11 @@ COPY lib /action/lib
 ##################################
 COPY TEMPLATES /action/lib/.automation
 
+################
+# Pull in libs #
+################
+COPY --from=base_image /usr/libexec/ /usr/libexec/
+
 ################################################
 # Run to build version file and validate image #
 ################################################
@@ -452,11 +451,6 @@ ARG PSSA_VERSION='latest'
 ENV ARM_TTK_PSD1="${ARM_TTK_DIRECTORY}/arm-ttk-master/arm-ttk/arm-ttk.psd1"
 ENV IMAGE="standard"
 ENV PATH="${PATH}:/var/cache/dotnet/tools:/usr/share/dotnet"
-
-################
-# Pull in libs #
-################
-COPY --from=base_image /usr/libexec/ /usr/libexec/
 
 #########################
 # Install dotenv-linter #
