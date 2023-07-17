@@ -14,7 +14,7 @@ FROM cljkondo/clj-kondo:2023.03.17-alpine as clj-kondo
 FROM dotenvlinter/dotenv-linter:3.3.0 as dotenv-linter
 FROM ghcr.io/awkbar-devops/clang-format:v1.0.2 as clang-format
 FROM ghcr.io/terraform-linters/tflint-bundle:v0.46.0.1 as tflint
-FROM ghcr.io/yannh/kubeconform:v0.6.1 as kubeconfrm
+FROM ghcr.io/yannh/kubeconform:v0.6.3 as kubeconfrm
 FROM golangci/golangci-lint:v1.52.2 as golangci-lint
 FROM hadolint/hadolint:latest-alpine as dockerfile-lint
 FROM hashicorp/terraform:1.4.4 as terraform
