@@ -27,7 +27,7 @@ FROM zricethezav/gitleaks:v8.19.2 as gitleaks
 FROM yoheimuta/protolint:0.50.5 as protolint
 FROM ghcr.io/clj-kondo/clj-kondo:2024.08.29-alpine as clj-kondo
 FROM dart:3.5.2-sdk as dart
-FROM mcr.microsoft.com/dotnet/sdk:8.0.401-1-alpine3.19 as dotnet-sdk
+FROM mcr.microsoft.com/dotnet/sdk:8.0.402-alpine3.19 as dotnet-sdk
 FROM mcr.microsoft.com/powershell:7.4-alpine-3.17 as powershell
 
 FROM python:3.12.6-alpine3.19 as clang-format
