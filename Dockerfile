@@ -15,7 +15,7 @@ FROM ghcr.io/yannh/kubeconform:v0.7.0 as kubeconfrm
 FROM alpine/helm:3.18.6 as helm
 FROM golang:1.25.0-alpine as golang
 FROM golangci/golangci-lint:v2.4.0 as golangci-lint
-FROM goreleaser/goreleaser:v2.11.2 as goreleaser
+FROM goreleaser/goreleaser:v2.12.0 as goreleaser
 FROM hadolint/hadolint:v2.12.0-alpine as dockerfile-lint
 FROM hashicorp/terraform:1.13.0 as terraform
 FROM koalaman/shellcheck:v0.11.0 as shellcheck
