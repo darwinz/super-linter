@@ -54,7 +54,7 @@ jobs:
           sudo rm -rf /usr/local/.ghcup || true
 
       - name: Login to GHCR
-        uses: docker/login-action@v4.1.0
+        uses: docker/login-action@v4.2.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -207,7 +207,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to GHCR
-        uses: docker/login-action@v4.1.0
+        uses: docker/login-action@v4.2.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -273,7 +273,7 @@ jobs:
       pull-requests: write
     timeout-minutes: 120
     steps:
-      - uses: googleapis/release-please-action@v4.4.1
+      - uses: googleapis/release-please-action@v5.0.0
         id: release
         with:
           config-file: .github/release-please/release-please-config.json
@@ -308,7 +308,7 @@ jobs:
 
       - name: Login to GHCR
         if: steps.release.outputs.release_created
-        uses: docker/login-action@v4.1.0
+        uses: docker/login-action@v4.2.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
